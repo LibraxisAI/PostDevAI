@@ -8,12 +8,8 @@ readme = "README.md"
 license = "MIT"
 repository = "https://github.com/LibraxisAI/PostDevAI"
 
-[workspace]
-members = [
-    "crates/core",
-    "crates/tui",
-    "crates/utils",
-]
+# Na razie usuwamy workspace do momentu reorganizacji projektu
+# Do zrobienia: reorganizacja na workspace gdy będzie potrzebna
 
 [dependencies]
 # Core dependencies
