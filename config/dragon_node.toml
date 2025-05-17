@@ -1,0 +1,72 @@
+# Dragon Node Configuration
+
+[server]
+host = "0.0.0.0"  # Listen on all interfaces
+port = 50051      # Default gRPC port
+workers = 4       # Number of worker threads
+
+[ramlake]
+path = "/mnt/ramlake"                 # Mount point for RAM disk
+max_size = 214748364800               # 200GB in bytes
+backup_interval = 3600                # Backup every hour (in seconds)
+backup_path = "/var/backups/ramlake"  # Backup directory
+
+[ramlake.allocation]
+vector_store = 0.3    # 30% for vector indices
+code_store = 0.4      # 40% for code storage
+history_store = 0.2   # 20% for history events
+metadata_store = 0.1  # 10% for metadata and relations
+
+[models]
+device = "gpu"        # Use GPU for inference
+memory_limit = 200.0  # Maximum memory for models in GB
+
+[[models.models]]
+name = "embedder"
+path = "/opt/models/nomic-embed-text-v1"
+tokenizer_path = "/opt/models/nomic-embed-text-v1/tokenizer.json"
+memory_required = 1.0    # Memory requirements in GB
+type = "embedder"
+task = "embedding"
+priority = 10            # Highest priority (0-10)
+
+[[models.models]]
+name = "qwen-72b"
+path = "/opt/models/mlx-qwen3-72b"
+tokenizer_path = "/opt/models/mlx-qwen3-72b/tokenizer.json"
+memory_required = 140.0  # Memory requirements in GB
+type = "llm"
+task = "reasoning"
+priority = 5
+max_tokens = 32000
+model_type = "qwen3"
+
+[[models.models]]
+name = "codellama-34b"
+path = "/opt/models/mlx-codellama-34b"
+tokenizer_path = "/opt/models/mlx-codellama-34b/tokenizer.json"
+memory_required = 65.0   # Memory requirements in GB
+type = "llm"
+task = "code"
+priority = 6
+max_tokens = 16000
+model_type = "llama"
+
+[[models.models]]
+name = "mistral-7b"
+path = "/opt/models/mlx-mistral-7b-v0.2"
+tokenizer_path = "/opt/models/mlx-mistral-7b-v0.2/tokenizer.json"
+memory_required = 14.0   # Memory requirements in GB
+type = "llm"
+task = "fast"
+priority = 8
+max_tokens = 8000
+model_type = "mistral"
+
+[security]
+enable_tls = false
+# cert_path = "/path/to/cert.pem"
+# key_path = "/path/to/key.pem"
+enable_auth = false
+# jwt_secret = "your-jwt-secret"
+# allowed_clients = ["developer-node", "coordinator-node"]

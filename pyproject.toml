@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "postdevai-mlx"
+version = "0.1.0"
+description = "MLX integration for PostDevAI"
+authors = [
+    {name = "Maciej Gad", email = "maciej@github.com/szowesgad"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "mlx>=0.24.2",
+    "mlx-lm>=0.22.4",
+    "numpy>=1.24.0",
+    "grpcio>=1.59.0",
+    "grpcio-tools>=1.59.0",
+    "protobuf>=4.24.0",
+    "pydantic>=2.5.0",
+    "lmstudio>=1.0.0",
+    "tqdm>=4.66.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "mypy",
+    "isort",
+    "ruff",
+]
+
+[tool.setuptools]
+packages = [
+    "postdevai_mlx",
+    "postdevai_mlx.models",
+    "postdevai_mlx.inference",
+    "postdevai_mlx.embedding",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true

@@ -1,0 +1,419 @@
+syntax = "proto3";
+
+package postdevai;
+
+// Import common protobuf types
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// Service definitions for PostDevAI distributed system
+service DragonNodeService {
+  // RAM-Lake related operations
+  rpc StoreCode(StoreCodeRequest) returns (StoreCodeResponse);
+  rpc IndexCode(IndexCodeRequest) returns (IndexCodeResponse);
+  rpc StoreEvent(StoreEventRequest) returns (StoreEventResponse);
+  rpc StoreMetadata(StoreMetadataRequest) returns (StoreMetadataResponse);
+  rpc SearchSimilar(SearchSimilarRequest) returns (SearchSimilarResponse);
+  rpc GetCode(GetCodeRequest) returns (GetCodeResponse);
+  rpc GetEvent(GetEventRequest) returns (GetEventResponse);
+  rpc GetRelated(GetRelatedRequest) returns (GetRelatedResponse);
+  rpc GetRamLakeMetrics(google.protobuf.Empty) returns (RamLakeMetricsResponse);
+  
+  // MLX model operations
+  rpc LoadModel(LoadModelRequest) returns (LoadModelResponse);
+  rpc UnloadModel(UnloadModelRequest) returns (UnloadModelResponse);
+  rpc RunInference(RunInferenceRequest) returns (RunInferenceResponse);
+  rpc GenerateEmbedding(GenerateEmbeddingRequest) returns (GenerateEmbeddingResponse);
+  rpc GetModelStatus(GetModelStatusRequest) returns (GetModelStatusResponse);
+  rpc GetMemoryUsage(google.protobuf.Empty) returns (MemoryUsageResponse);
+  rpc GetLoadedModels(google.protobuf.Empty) returns (LoadedModelsResponse);
+}
+
+service DeveloperNodeService {
+  // Event reporting
+  rpc ReportEvent(ReportEventRequest) returns (ReportEventResponse);
+  rpc ReportError(ReportErrorRequest) returns (ReportErrorResponse);
+  rpc ReportCodeChange(ReportCodeChangeRequest) returns (ReportCodeChangeResponse);
+  
+  // TUI state synchronization
+  rpc SyncTUIState(SyncTUIStateRequest) returns (SyncTUIStateResponse);
+  rpc GetTUIUpdates(GetTUIUpdatesRequest) returns (stream TUIUpdateResponse);
+}
+
+service CoordinatorNodeService {
+  // Node discovery and management
+  rpc RegisterNode(RegisterNodeRequest) returns (RegisterNodeResponse);
+  rpc UnregisterNode(UnregisterNodeRequest) returns (UnregisterNodeResponse);
+  rpc GetNodeStatus(GetNodeStatusRequest) returns (GetNodeStatusResponse);
+  rpc ListNodes(ListNodesRequest) returns (ListNodesResponse);
+  
+  // Task routing
+  rpc RouteTask(RouteTaskRequest) returns (RouteTaskResponse);
+  rpc GetTaskStatus(GetTaskStatusRequest) returns (GetTaskStatusResponse);
+  rpc CancelTask(CancelTaskRequest) returns (CancelTaskResponse);
+  
+  // State synchronization
+  rpc SyncState(SyncStateRequest) returns (SyncStateResponse);
+  rpc GetStateUpdates(GetStateUpdatesRequest) returns (stream StateUpdateResponse);
+}
+
+// Message type definitions
+
+// UUID represented as a string
+message UUID {
+  string value = 1;
+}
+
+// RAM-Lake related messages
+
+message StoreCodeRequest {
+  string path = 1;
+  string content = 2;
+  string language = 3;
+}
+
+message StoreCodeResponse {
+  UUID id = 1;
+}
+
+message IndexCodeRequest {
+  UUID code_id = 1;
+  repeated float embeddings = 2;
+}
+
+message IndexCodeResponse {
+  bool success = 1;
+}
+
+message StoreEventRequest {
+  string event_type = 1;
+  string content = 2;
+}
+
+message StoreEventResponse {
+  UUID id = 1;
+}
+
+message StoreMetadataRequest {
+  UUID source_id = 1;
+  string relation = 2;
+  UUID target_id = 3;
+}
+
+message StoreMetadataResponse {
+  bool success = 1;
+}
+
+message SearchSimilarRequest {
+  repeated float embedding = 1;
+  int32 limit = 2;
+}
+
+message SearchSimilarResponse {
+  message Result {
+    UUID id = 1;
+    float score = 2;
+  }
+  repeated Result results = 1;
+}
+
+message GetCodeRequest {
+  UUID id = 1;
+}
+
+message GetCodeResponse {
+  string path = 1;
+  string content = 2;
+  string language = 3;
+}
+
+message GetEventRequest {
+  UUID id = 1;
+}
+
+message GetEventResponse {
+  string event_type = 1;
+  string content = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message GetRelatedRequest {
+  UUID id = 1;
+  optional string relation = 2;
+}
+
+message GetRelatedResponse {
+  message Relation {
+    UUID source_id = 1;
+    string relation = 2;
+    UUID target_id = 3;
+  }
+  repeated Relation relations = 1;
+}
+
+message RamLakeMetricsResponse {
+  uint64 total_size = 1;
+  uint64 used_size = 2;
+  uint64 vector_store_size = 3;
+  uint64 code_store_size = 4;
+  uint64 history_store_size = 5;
+  uint64 metadata_store_size = 6;
+  uint32 indexed_files = 7;
+  uint32 vector_entries = 8;
+  uint32 history_events = 9;
+}
+
+// MLX model related messages
+
+message LoadModelRequest {
+  string model_name = 1;
+}
+
+message LoadModelResponse {
+  bool success = 1;
+  optional string error_message = 2;
+  optional string alternative_model = 3;
+}
+
+message UnloadModelRequest {
+  string model_name = 1;
+}
+
+message UnloadModelResponse {
+  bool success = 1;
+  optional string error_message = 2;
+}
+
+message RunInferenceRequest {
+  string model_name = 1;
+  string input_text = 2;
+  optional int32 max_tokens = 3;
+  optional float temperature = 4;
+  optional float top_p = 5;
+  optional float frequency_penalty = 6;
+  optional float presence_penalty = 7;
+}
+
+message RunInferenceResponse {
+  string model_name = 1;
+  string generated_text = 2;
+  int32 tokens_generated = 3;
+  optional string error_message = 4;
+}
+
+message GenerateEmbeddingRequest {
+  string text = 1;
+  optional string model_name = 2;
+}
+
+message GenerateEmbeddingResponse {
+  repeated float embedding = 1;
+  optional string error_message = 2;
+}
+
+message GetModelStatusRequest {
+  string model_name = 1;
+}
+
+message GetModelStatusResponse {
+  string name = 1;
+  string status = 2;  // "loaded", "unloaded", "loading", "error"
+  string type = 3;
+  string task = 4;
+  float memory_gb = 5;
+  optional float last_used = 6;
+  int32 priority = 7;
+  optional string error_message = 8;
+}
+
+message MemoryUsageResponse {
+  float total_limit_gb = 1;
+  float current_usage_gb = 2;
+  float available_gb = 3;
+  map<string, float> model_usage_gb = 4;
+}
+
+message LoadedModelsResponse {
+  repeated string model_names = 1;
+}
+
+// Developer Node related messages
+
+message ReportEventRequest {
+  string event_type = 1;
+  string content = 2;
+  string source = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+message ReportEventResponse {
+  UUID event_id = 1;
+  bool processed = 2;
+  optional string action_needed = 3;
+}
+
+message ReportErrorRequest {
+  string error_type = 1;
+  string message = 2;
+  optional string source = 3;
+  string severity = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  optional string stack_trace = 6;
+}
+
+message ReportErrorResponse {
+  UUID error_id = 1;
+  bool processed = 2;
+  optional string suggested_fix = 3;
+}
+
+message ReportCodeChangeRequest {
+  string file_path = 1;
+  string old_content = 2;
+  string new_content = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  string change_type = 5;  // "create", "modify", "delete"
+}
+
+message ReportCodeChangeResponse {
+  UUID change_id = 1;
+  bool processed = 2;
+  optional string feedback = 3;
+}
+
+message SyncTUIStateRequest {
+  string view = 1;
+  bytes state_data = 2;
+  int32 version = 3;
+}
+
+message SyncTUIStateResponse {
+  bool success = 1;
+  int32 latest_version = 2;
+}
+
+message GetTUIUpdatesRequest {
+  int32 current_version = 1;
+  repeated string views = 2;
+}
+
+message TUIUpdateResponse {
+  string view = 1;
+  bytes state_data = 2;
+  int32 version = 3;
+}
+
+// Coordinator Node related messages
+
+message RegisterNodeRequest {
+  string node_type = 1;  // "dragon", "developer", "coordinator"
+  string hostname = 2;
+  uint32 port = 3;
+  map<string, string> capabilities = 4;
+  map<string, float> resources = 5;
+}
+
+message RegisterNodeResponse {
+  UUID node_id = 1;
+  bool success = 2;
+  optional string cluster_token = 3;
+}
+
+message UnregisterNodeRequest {
+  UUID node_id = 1;
+}
+
+message UnregisterNodeResponse {
+  bool success = 1;
+}
+
+message GetNodeStatusRequest {
+  UUID node_id = 1;
+}
+
+message GetNodeStatusResponse {
+  UUID node_id = 1;
+  string status = 2;  // "active", "inactive", "error"
+  map<string, float> resource_usage = 3;
+  google.protobuf.Timestamp last_heartbeat = 4;
+  repeated string active_tasks = 5;
+}
+
+message ListNodesRequest {
+  optional string node_type = 1;
+  optional string status = 2;
+}
+
+message ListNodesResponse {
+  message NodeInfo {
+    UUID node_id = 1;
+    string node_type = 2;
+    string hostname = 3;
+    uint32 port = 4;
+    string status = 5;
+    map<string, string> capabilities = 6;
+  }
+  repeated NodeInfo nodes = 1;
+}
+
+message RouteTaskRequest {
+  string task_type = 1;
+  bytes task_data = 2;
+  int32 priority = 3;
+  optional UUID preferred_node = 4;
+  optional google.protobuf.Timestamp deadline = 5;
+}
+
+message RouteTaskResponse {
+  UUID task_id = 1;
+  UUID assigned_node = 2;
+  string status = 3;  // "queued", "assigned", "running", "error"
+  optional string error_message = 4;
+  optional google.protobuf.Timestamp estimated_completion = 5;
+}
+
+message GetTaskStatusRequest {
+  UUID task_id = 1;
+}
+
+message GetTaskStatusResponse {
+  UUID task_id = 1;
+  string status = 2;  // "queued", "assigned", "running", "completed", "error", "cancelled"
+  optional UUID assigned_node = 3;
+  optional bytes result_data = 4;
+  optional string error_message = 5;
+  optional float progress = 6;  // 0.0 to 1.0
+}
+
+message CancelTaskRequest {
+  UUID task_id = 1;
+}
+
+message CancelTaskResponse {
+  bool success = 1;
+  string status = 2;  // "cancelled", "completed", "not_found", "error"
+}
+
+message SyncStateRequest {
+  string domain = 1;
+  bytes state_data = 2;
+  int32 version = 3;
+}
+
+message SyncStateResponse {
+  bool success = 1;
+  int32 accepted_version = 2;
+  optional bytes conflict_data = 3;
+}
+
+message GetStateUpdatesRequest {
+  string domain = 1;
+  int32 current_version = 2;
+}
+
+message StateUpdateResponse {
+  string domain = 1;
+  bytes state_data = 2;
+  int32 version = 3;
+  UUID source_node = 4;
+}

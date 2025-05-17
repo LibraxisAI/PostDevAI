@@ -1,0 +1,40 @@
+# Developer Node Configuration
+
+[server]
+host = "0.0.0.0"  # Listen on all interfaces
+port = 50052      # Default gRPC port for Developer Node
+workers = 2       # Number of worker threads
+
+[dragon_node]
+host = "dragon.local"   # Hostname of Dragon Node
+port = 50051            # Port of Dragon Node
+timeout_ms = 5000       # Request timeout in milliseconds
+
+[coordinator_node]
+host = "coordinator.local"  # Hostname of Coordinator Node
+port = 50053                # Port of Coordinator Node
+timeout_ms = 5000           # Request timeout in milliseconds
+
+[monitoring]
+poll_interval_ms = 100      # Terminal polling interval in milliseconds
+file_watch_debounce_ms = 300 # File watch debounce time in milliseconds
+enable_ide_integration = true # Enable IDE integration if available
+watch_directories = ["/Users/username/projects"]  # Directories to watch
+
+[tui]
+update_interval_ms = 250    # UI update interval in milliseconds
+theme = "default"           # UI theme
+enable_mouse = true         # Enable mouse support
+enable_keyboard = true      # Enable keyboard shortcuts
+
+[local_models]
+enable = true               # Enable local model execution
+model_path = "/Users/username/.cache/models/tiny-mistral"  # Path to local model
+
+[security]
+enable_tls = false
+# cert_path = "/path/to/cert.pem"
+# key_path = "/path/to/key.pem"
+enable_auth = true
+jwt_secret = "your-jwt-secret"
+# Don't use hardcoded secrets in production

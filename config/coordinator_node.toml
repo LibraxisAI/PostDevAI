@@ -1,0 +1,37 @@
+# Coordinator Node Configuration
+
+[server]
+host = "0.0.0.0"  # Listen on all interfaces
+port = 50053      # Default gRPC port for Coordinator Node
+workers = 2       # Number of worker threads
+
+[discovery]
+heartbeat_interval_ms = 5000    # Heartbeat interval in milliseconds
+dead_node_timeout_ms = 15000    # Time to mark node as dead if no heartbeat
+auto_register = true            # Auto-register known nodes
+known_nodes = [
+  { name = "dragon", type = "dragon", host = "dragon.local", port = 50051 },
+  { name = "developer", type = "developer", host = "developer.local", port = 50052 }
+]
+
+[routing]
+default_timeout_ms = 10000      # Default task timeout in milliseconds
+max_retries = 3                 # Maximum retries for failed tasks
+load_balancing = "resource"     # Load balancing strategy: "round_robin", "resource", "capability"
+
+[state]
+sync_interval_ms = 1000         # State synchronization interval in milliseconds
+conflict_resolution = "last_write_wins"  # Conflict resolution strategy
+
+[security]
+enable_tls = true
+cert_path = "/path/to/cert.pem"
+key_path = "/path/to/key.pem"
+enable_auth = true
+jwt_secret = "your-jwt-secret"
+allowed_clients = ["dragon-node", "developer-node"]
+
+[tasks]
+queue_size = 1000               # Maximum task queue size
+worker_threads = 4              # Number of worker threads
+priority_levels = 10            # Number of priority levels
