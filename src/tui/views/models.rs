@@ -99,8 +99,12 @@ fn render_model_list<B: ratatui::backend::Backend>(frame: &mut Frame<B>, state: 
 fn render_model_details<B: ratatui::backend::Backend>(frame: &mut Frame<B>, state: &AppState, area: Rect) {
     let content = if let Some(model) = state.loaded_models.first() {
         // Format the last used time
-        let last_used_ago = Instant::now().duration_since(model.last_used);
-        let last_used_str = format_duration(&last_used_ago);
+        let last_used_str = if let Some(last_used) = model.last_used {
+            let last_used_ago = Instant::now().duration_since(last_used);
+            format_duration(&last_used_ago)
+        } else {
+            "Unknown".to_string()
+        };
         
         vec![
             Spans::from(vec![Span::styled(format!("Model: {}", model.name), 

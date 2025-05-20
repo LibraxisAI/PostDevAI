@@ -13,7 +13,7 @@ use ratatui::{
 };
 use parking_lot::RwLock;
 
-use crate::core::memory::{RamLake, RamLakeMetrics};
+use crate::core::memory::ramlake::{RamLake, RamLakeMetrics};
 use crate::system::SystemState;
 use crate::tui::state::app_state::{AppState, ModelInfo};
 use crate::tui::views::dashboard::render_dashboard;
@@ -251,15 +251,16 @@ impl App {
                     // Model management
                     KeyCode::Char('m') => {
                         if self.current_view == View::Models {
-                            // Get the selected model
-                            let state = self.state.read();
-                            if let Some(selected_model) = state.loaded_models.first() {
-                                // Toggle model state would go here
-                                // This would call into MLX model manager to load/unload
-                                drop(state); // Release lock before updating
-                                
+                            // Get the selected model name
+                            let model_name = {
+                                let state = self.state.read();
+                                state.loaded_models.first().map(|m| m.name.clone())
+                            };
+                            
+                            // Use the model name after releasing the lock
+                            if let Some(name) = model_name {
                                 // For now, just log the action
-                                println!("Toggle model: {}", selected_model.name);
+                                println!("Toggle model: {}", name);
                             }
                         }
                     }
@@ -281,7 +282,7 @@ impl App {
                     // Save snapshot
                     KeyCode::Char('s') => {
                         if key.modifiers.contains(KeyModifiers::CONTROL) {
-                            if let Some(ramlake) = &self.ramlake {
+                            if let Some(_ramlake) = &self.ramlake {
                                 // Trigger backup on RAM-Lake
                                 // This would actually force a backup
                                 println!("Triggered RAM-Lake backup");
