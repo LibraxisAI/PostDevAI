@@ -8,12 +8,8 @@ readme = "README.md"
 license = "MIT"
 repository = "https://github.com/LibraxisAI/PostDevAI"
 
-[workspace]
-members = [
-    "crates/core",
-    "crates/tui",
-    "crates/utils",
-]
+# Na razie usuwamy workspace do momentu reorganizacji projektu
+# Do zrobienia: reorganizacja na workspace gdy będzie potrzebna
 
 [dependencies]
 # Core dependencies
@@ -42,7 +38,15 @@ regex = "1.10.2"
 walkdir = "2.4.0"
 
 # Vector search and indexing
-faiss = { version = "0.11.0", features = ["static"] }
+# Tymczasowo wyłączamy faiss z powodu braku feature "static"
+# faiss = { version = "0.11.0", features = ["static"] }
+
+# System information
+sys-info = "0.9.1"
+num_cpus = "1.16.0"
+
+# Configuration
+toml = "0.8.9"
 
 # gRPC and communication
 tonic = "0.10.2"
@@ -55,11 +59,13 @@ pyo3 = { version = "0.20.2", features = ["auto-initialize", "multiple-pymethods"
 numpy = "0.20.0"
 
 [dev-dependencies]
-tempfile = "3.8.1"
 criterion = "0.5.1"
 mockall = "0.11.4"
 assert_fs = "1.0.13"
 predicates = "3.0.4"
+
+[dependencies.tempfile]
+version = "3.8.1"
 
 [features]
 default = ["ramlake", "tui"]

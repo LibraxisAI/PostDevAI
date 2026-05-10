@@ -1,5 +1,8 @@
 // PostDevAI - Autonomous RAM-Lake Memory Server for Developer Symbiosis
 
+// Export generated protobuf code
+pub mod proto;
+
 // Export core modules
 pub mod core {
     pub mod memory {
@@ -52,12 +55,14 @@ pub mod utils {
 
 // Export system types
 pub mod system {
+    #[derive(Debug, Clone)]
     pub enum NodeType {
         Dragon,
         Developer,
         Coordinator,
     }
 
+    #[derive(Clone)]
     pub struct SystemState {
         pub node_type: NodeType,
         pub hostname: String,
@@ -66,6 +71,7 @@ pub mod system {
         pub cpu_usage: f32,
     }
 
+    #[derive(Debug, Clone)]
     pub struct MemoryUsage {
         pub total: u64,
         pub used: u64,

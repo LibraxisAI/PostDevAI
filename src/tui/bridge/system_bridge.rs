@@ -4,9 +4,11 @@ use std::time::Instant;
 use parking_lot::RwLock;
 use chrono::{DateTime, Utc, Local};
 use uuid::Uuid;
+use sys_info;
+use num_cpus;
 
 use crate::system::{SystemState, MemoryUsage, NodeType};
-use crate::core::memory::{RamLake, RamLakeMetrics};
+use crate::core::memory::ramlake::{RamLake, RamLakeMetrics};
 use crate::tui::state::app_state::{ModelInfo, EventInfo, CodeInfo, NodeConnection};
 
 /// System bridge to connect the TUI with the underlying system
@@ -50,7 +52,8 @@ impl MlxBridge {
                 status: "loaded".to_string(),
                 memory_gb: 32.5,
                 priority: 10,
-                last_used: Instant::now(),
+                last_used_secs: Some(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs()),
+                last_used: Some(Instant::now()),
             },
             ModelInfo {
                 name: "MLX-Embedder".to_string(),
@@ -58,7 +61,8 @@ impl MlxBridge {
                 status: "loaded".to_string(),
                 memory_gb: 1.2,
                 priority: 10,
-                last_used: Instant::now(),
+                last_used_secs: Some(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs()),
+                last_used: Some(Instant::now()),
             },
             ModelInfo {
                 name: "CodeLlama-34B".to_string(),
@@ -66,7 +70,8 @@ impl MlxBridge {
                 status: "unloaded".to_string(),
                 memory_gb: 34.2,
                 priority: 5,
-                last_used: Instant::now() - std::time::Duration::from_secs(3600),
+                last_used_secs: Some(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs() - 3600),
+                last_used: Some(Instant::now() - std::time::Duration::from_secs(3600)),
             },
         ]
     }
@@ -167,7 +172,9 @@ impl SystemBridge {
                             .duration_since(std::time::UNIX_EPOCH)
                             .unwrap_or_default()
                             .as_secs();
-                        now - boot as u64
+                        // Convert boot time to u64 safely
+                        let boot_secs = boot.tv_sec as u64;
+                        now.saturating_sub(boot_secs)
                     }
                     Err(_) => 0,
                 }
@@ -218,8 +225,8 @@ impl SystemBridge {
     }
     
     /// Get recent events from history store
-    pub fn get_recent_events(&self, limit: usize) -> Vec<EventInfo> {
-        if let Some(ramlake) = &self.ramlake {
+    pub fn get_recent_events(&self, _limit: usize) -> Vec<EventInfo> {
+        if let Some(_ramlake) = &self.ramlake {
             // This would actually query the history store
             // For now, return placeholder data
             vec![
@@ -254,8 +261,8 @@ impl SystemBridge {
     }
     
     /// Get recent code files
-    pub fn get_recent_code(&self, limit: usize) -> Vec<CodeInfo> {
-        if let Some(ramlake) = &self.ramlake {
+    pub fn get_recent_code(&self, _limit: usize) -> Vec<CodeInfo> {
+        if let Some(_ramlake) = &self.ramlake {
             // This would actually query the code store
             // For now, return placeholder data
             vec![

@@ -7,7 +7,7 @@ use ratatui::text::{Text, Span, Spans};
 use crate::tui::state::app_state::AppState;
 
 /// Render the context view
-pub fn render_context<B: ratatui::backend::Backend>(frame: &mut Frame<B>, state: &AppState) {
+pub fn render_context<B: ratatui::backend::Backend>(frame: &mut Frame<B>, _state: &AppState) {
     // This is a placeholder implementation
     // In a real implementation, we would render a proper context view
     
@@ -32,9 +32,9 @@ pub fn render_context<B: ratatui::backend::Backend>(frame: &mut Frame<B>, state:
     
     // Render content
     let content = Paragraph::new(vec![
-        Spans::from(vec![Span::styled("Current Context:", Style::default().add_modifier(ratatui::style::Modifier::BOLD))]);
-        Spans::from(vec![Span::raw("")]);
-        Spans::from(vec![Span::raw("No active context.")]);
+        Spans::from(vec![Span::styled("Current Context:", Style::default().add_modifier(ratatui::style::Modifier::BOLD))]),
+        Spans::from(vec![Span::raw("")]),
+        Spans::from(vec![Span::raw("No active context.")])
     ])
     .block(Block::default().borders(Borders::ALL).title("Active Context"))
     .wrap(Wrap { trim: true });

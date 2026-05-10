@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 use serde::{Serialize, Deserialize};
+use toml;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -163,7 +164,7 @@ pub fn create_default_config() -> Config {
                     task: "reasoning".to_string(),
                     priority: 5,
                     max_tokens: Some(32000),
-                    model_type: Some("qwen3"),
+                    model_type: Some("qwen3".to_string()),
                 },
                 ModelConfig {
                     name: "codellama-34b".to_string(),
@@ -174,7 +175,7 @@ pub fn create_default_config() -> Config {
                     task: "code".to_string(),
                     priority: 6,
                     max_tokens: Some(16000),
-                    model_type: Some("llama"),
+                    model_type: Some("llama".to_string()),
                 },
                 ModelConfig {
                     name: "mistral-7b".to_string(),
@@ -185,7 +186,7 @@ pub fn create_default_config() -> Config {
                     task: "fast".to_string(),
                     priority: 8,
                     max_tokens: Some(8000),
-                    model_type: Some("mistral"),
+                    model_type: Some("mistral".to_string()),
                 },
             ],
         },

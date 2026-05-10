@@ -26,8 +26,9 @@ pub struct VectorStore {
     metadata: RwLock<HashMap<Uuid, EmbeddingMetadata>>,
     
     /// FAISS index
-    #[cfg(feature = "faiss")]
-    faiss_index: RwLock<Option<faiss::Index>>,
+    // Tymczasowo wyłączone z powodu braku feature "static" w faiss
+    // #[cfg(feature = "faiss")]
+    // faiss_index: RwLock<Option<faiss::Index>>,
 }
 
 /// Vector Index

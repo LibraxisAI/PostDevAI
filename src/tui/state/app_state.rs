@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 use std::time::{Instant, Duration};
 use serde::{Serialize, Deserialize};
 
-use crate::core::memory::RamLakeMetrics;
+use crate::core::memory::ramlake::RamLakeMetrics;
 use crate::system::SystemState;
 
 /// Application state for the TUI
@@ -50,8 +50,13 @@ pub struct ModelInfo {
     /// Priority
     pub priority: i32,
     
-    /// Last used timestamp
-    pub last_used: Instant,
+    /// Last used timestamp as elapsed seconds since UNIX epoch
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_used_secs: Option<u64>,
+    
+    /// Last used timestamp (not serialized)
+    #[serde(skip)]
+    pub last_used: Option<Instant>,
 }
 
 /// Event information
